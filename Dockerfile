@@ -23,6 +23,6 @@ COPY --from=frontend /app/build /usr/share/nginx/html
 # Copy your custom NGINX config
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80 443
+EXPOSE 80 443 443
 
 CMD ["nginx", "-g", "daemon off;"]
