@@ -6,7 +6,8 @@ const Reviews = ({ reviews }) => {
         <div className="reviews">
             {reviews.map((review, index) => (
                 <div key={index} className="review-item">
-                    <p>{review}</p>
+                    <strong>{review.author}</strong> <span>({review.rating}★)</span>
+                    <p>{review.text}</p>
                 </div>
             ))}
         </div>
@@ -14,7 +15,13 @@ const Reviews = ({ reviews }) => {
 };
 
 Reviews.propTypes = {
-    reviews: PropTypes.arrayOf(PropTypes.string).isRequired,
+    reviews: PropTypes.arrayOf(
+        PropTypes.shape({
+            author: PropTypes.string.isRequired,
+            rating: PropTypes.number.isRequired,
+            text: PropTypes.string.isRequired
+        })
+    ).isRequired,
 };
 
 export default Reviews;

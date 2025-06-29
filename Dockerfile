@@ -2,23 +2,23 @@
 # Stage 1: Build React App
 FROM node:23 AS frontend
 
-WORKDIR /app/ux-magnificent-fox
+WORKDIR /app
 
 # Install dependencies
-COPY ux-magnificent-fox/package*.json ./ux-magnificent-fox/
-RUN cd ux-magnificent-fox && npm install
+COPY package*.json ./
+RUN npm install
 
 # Copy the rest of the React app files
-COPY ux-magnificent-fox ./ux-magnificent-fox
+COPY . .
 
 # Build the React app for production
-RUN cd ux-magnificent-fox && npm run build
+RUN npm run build
 
 # Stage 2: Nginx Server
 FROM nginx:alpine AS nginx
 
 # Copy React build files into NGINX web root
-COPY --from=frontend /app/ux-magnificent-fox/build /usr/share/nginx/html
+COPY --from=frontend /app/build /usr/share/nginx/html
 
 # Copy your custom NGINX config
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf

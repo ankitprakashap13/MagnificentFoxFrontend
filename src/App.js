@@ -29,8 +29,7 @@ const theme = {
   },
 };
 
-// const API_BASE_URL = process.env.BACKEND_SERVER_URL || 'https://api.magnificentfox.shop/api';
-const API_BASE_URL = process.env.BACKEND_SERVER_URL || 'http://localhost:8000/api';
+const API_BASE_URL = 'https://api.magnificentfox.shop/api';
 
 function App() {
   const [cardListData, setCardListData] = useState([]);
@@ -60,7 +59,8 @@ function App() {
         setVideoCardsData(videoCardsResponse.data);
 
         const productsResponse = await axios.get(`${API_BASE_URL}/products`);
-        const productsData = productsResponse.data.order_items.map(item => ({
+        const orderItems = productsResponse.data && productsResponse.data.order_items ? productsResponse.data.order_items : [];
+        const productsData = orderItems.map(item => ({
           product: item.product,
           quantity: item.quantity,
           price: item.price
@@ -75,9 +75,11 @@ function App() {
     fetchData();
   }, []);
 
-  if (apiError) {
-    return <NotFound />;
-  }
+  const apiErrorBanner = apiError ? (
+    <div style={{ background: '#ffcccc', color: '#900', padding: '10px', textAlign: 'center', fontWeight: 'bold' }}>
+      Unable to fetch data from the server. Some features may not be available.
+    </div>
+  ) : null;
 
   return (
     <ThemeContextProvider>
@@ -86,6 +88,7 @@ function App() {
         <Router>
           <div className="App">
             <div className="container">
+              {apiErrorBanner}
               <OffersBanner theme={theme.offersBanner} />
               <Navigation theme={theme.navigation} />
               <header className="App-header">
@@ -100,7 +103,9 @@ function App() {
                     <VideoCards cards={videoCardsData || []} />
                     <Footer theme={theme.footer} />
                   </Route>
-                  {/* <Route component={NotFound} /> */}
+                  <Route>
+                    <NotFound />
+                  </Route>
                 </Switch>
               </header>
             </div>
