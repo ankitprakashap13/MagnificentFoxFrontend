@@ -1,19 +1,14 @@
 version: '3.8'
 
 services:
-  nginx:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: nginx
-    container_name: magnificentfox_nginx
-    restart: always
+    container_name: magnificentfox-app
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-
-volumes:
-  static_volume:
-  media_volume:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
