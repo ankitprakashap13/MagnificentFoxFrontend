@@ -31,6 +31,15 @@ const theme = {
 
 const API_BASE_URL = 'https://api.magnificentfox.shop/api';
 
+// Tags configuration for different data types
+const API_TAGS_CONFIG = {
+  cardList: ['NEW-ARRIVALS', 'TRENDING'],
+  columnStructure: ['BESTSELLER', 'PREMIUM'],
+  favourites: ['EDITORIAL', 'CUSTOMER-FAVORITE'],
+  reviews: ['STAFF-PICKS', 'VALUE-FOR-MONEY'],
+  videoCards: ['HAS-VIDEO']
+};
+
 function App() {
   const [cardListData, setCardListData] = useState([]);
   const [columnStructureData, setColumnStructureData] = useState([]);
@@ -43,29 +52,29 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const cardListResponse = await axios.get(`${API_BASE_URL}/card-list-data`);
+        // Fetch card list data
+        const cardListResponse = await axios.get(`${API_BASE_URL}/products/?tags=${API_TAGS_CONFIG.cardList.join(',')}`);
         setCardListData(cardListResponse.data);
 
-        const columnStructureResponse = await axios.get(`${API_BASE_URL}/column-structure-data`);
+        // Fetch column structure data
+        const columnStructureResponse = await axios.get(`${API_BASE_URL}/products/?tags=${API_TAGS_CONFIG.columnStructure.join(',')}`);
         setColumnStructureData(columnStructureResponse.data);
 
-        const favouritesResponse = await axios.get(`${API_BASE_URL}/favourites-data`);
+        // Fetch favourites data
+        const favouritesResponse = await axios.get(`${API_BASE_URL}/products/?tags=${API_TAGS_CONFIG.favourites.join(',')}`);
         setFavouritesData(favouritesResponse.data);
 
-        const reviewsResponse = await axios.get(`${API_BASE_URL}/reviews-data`);
+        // Fetch reviews data
+        const reviewsResponse = await axios.get(`${API_BASE_URL}/products/?tags=${API_TAGS_CONFIG.reviews.join(',')}`);
         setReviewsData(reviewsResponse.data);
 
-        const videoCardsResponse = await axios.get(`${API_BASE_URL}/video-cards-data`);
+        // Fetch video cards data
+        const videoCardsResponse = await axios.get(`${API_BASE_URL}/products/?tags=${API_TAGS_CONFIG.videoCards.join(',')}`);
         setVideoCardsData(videoCardsResponse.data);
 
+        // Fetch all products
         const productsResponse = await axios.get(`${API_BASE_URL}/products`);
-        const orderItems = productsResponse.data && productsResponse.data.order_items ? productsResponse.data.order_items : [];
-        const productsData = orderItems.map(item => ({
-          product: item.product,
-          quantity: item.quantity,
-          price: item.price
-        }));
-        setProducts(productsData);
+        setProducts(productsResponse.data || []);
       } catch (error) {
         console.error("Error fetching data from API:", error);
         setApiError(true);
@@ -95,12 +104,45 @@ function App() {
                 <Switch>
                   <Route exact path="/">
                     <SlideShow products={products || []} />
-                    <Collections cards={cardListData || []} />
+                    <Collections products={(cardListData || []).map(product => ({
+                      ...product,
+                      imageUrl: product.images?.[0]?.image || '',
+                      price: parseFloat(product.price) * 100,
+                      salePrice: product.mrp ? parseFloat(product.mrp) * 100 : null,
+                      link: `#product-${product.id}`
+                    }))} />
                     <SloganSection slogan="Our Slogan" />
-                    <ColumnStructure data={columnStructureData || []} />
-                    <Favourites cards={favouritesData || []} />
-                    <Reviews reviews={reviewsData || []} />
-                    <VideoCards cards={videoCardsData || []} />
+                    <ColumnStructure data={{
+                      sections: [{
+                        columns: (columnStructureData || []).map(product => ({
+                          image: product.images?.[0]?.image || '',
+                          link: `#product-${product.id}`,
+                          text: {
+                            title: product.name,
+                            description: product.description
+                          }
+                        }))
+                      }]
+                    }} />
+                    <Favourites products={(favouritesData || []).map(product => ({
+                      ...product,
+                      imageUrl: product.images?.[0]?.image || '',
+                      price: parseFloat(product.price) * 100,
+                      salePrice: product.mrp ? parseFloat(product.mrp) * 100 : null,
+                      link: `#product-${product.id}`
+                    }))} />
+                    <Reviews reviews={(reviewsData || []).map(product => ({
+                      author: 'Customer',
+                      rating: 5,
+                      text: product.customer_reviews || 'Great product!'
+                    }))} />
+                    <VideoCards cards={(videoCardsData || []).map(product => ({
+                      video: product.videos?.[0]?.url || '',
+                      products: [{
+                        title: product.name,
+                        link: `#product-${product.id}`
+                      }]
+                    }))} />
                     <Footer theme={theme.footer} />
                   </Route>
                   <Route>

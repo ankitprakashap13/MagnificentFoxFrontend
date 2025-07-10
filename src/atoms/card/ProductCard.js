@@ -3,7 +3,13 @@ import { Div, Image, Text, Button } from 'atomize';
 
 const ProductCard = ({ card }) => (
   <Div m={{ b: "1rem" }} shadow="3" hoverShadow="4" p="0.5rem" rounded="lg" maxW="150px">
-    <Image src={card.imageUrl} alt={card.name} width="100%" h="auto" />
+    <Image 
+      src={card.imageUrl} 
+      alt={card.name} 
+      width="100%" 
+      h="150px" 
+      style={{ objectFit: 'cover', objectPosition: 'center' }}
+    />
     <Text tag="h4" m={{ t: "0.5rem" }} textSize="caption">
       {card.name}
     </Text>
