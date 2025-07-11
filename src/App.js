@@ -14,6 +14,7 @@ import Collections from './components/Collections';
 import Favourites from './components/Favourites';
 import Reviews from './components/Reviews';
 import VideoCards from './components/VideoCards';
+import Products from './components/Products';
 import NotFound from './components/NotFound';
 
 const theme = {
@@ -144,6 +145,9 @@ function App() {
                       }]
                     }))} />
                     <Footer theme={theme.footer} />
+                  </Route>
+                  <Route path="/products">
+                    <Products />
                   </Route>
                   <Route>
                     <NotFound />

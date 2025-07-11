@@ -26,8 +26,14 @@ const VideoCards = ({ cards }) => {
     <div className="video-cards">
       <Carousel
         responsive={responsive}
-        settings={{slidesToShow: 3}}
-        arrows={true}
+        settings={{
+          slidesToShow: 3,
+          arrows: true,
+          dots: false,
+          infinite: true,
+          autoplay: true,
+          autoplaySpeed: 4000
+        }}
       >
         {(cards || []).map((card, index) => (
           <div key={index} className="video-card">
